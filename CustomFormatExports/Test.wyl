@@ -1,0 +1,28 @@
+START_TABLE "A"
+   "ID"
+   "Name"
+   "Tabela"
+END_TABLE
+START_TABLE "B"
+   "ID"
+   "Name"
+   "Tabela"
+END_TABLE
+START_TABLE "C"
+   "ID"
+   "Name"
+   "Tabela"
+END_TABLE
+START_DATA
+     ["A"] ADD ['1','Filip','A']
+     ["A"] ADD ['2','Jovan','A']
+     ["A"] ADD ['3','Laza','A']
+     ["A"] ADD ['4','Jana','A']
+     ["A"] ADD ['5','Brale','A']
+     ["B"] ADD ['1','Filip','B']
+     ["B"] ADD ['2','Jovan','B']
+     ["B"] ADD ['3','Laza','B']
+     ["B"] ADD ['4','Jana','B']
+     ["C"] ADD ['1','Filip','C']
+     ["C"] ADD ['4','Jana','C']
+END_DATA

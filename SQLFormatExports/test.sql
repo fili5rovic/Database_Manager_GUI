@@ -1,0 +1,26 @@
+CREATE TABLE IF NOT EXISTS "A" (
+       "ID"	VARCHAR(50) NOT NULL,
+     "Name"	VARCHAR(50) NOT NULL,
+   "Tabela"	VARCHAR(50) NOT NULL
+);
+CREATE TABLE IF NOT EXISTS "B" (
+       "ID"	VARCHAR(50) NOT NULL,
+     "Name"	VARCHAR(50) NOT NULL,
+   "Tabela"	VARCHAR(50) NOT NULL
+);
+CREATE TABLE IF NOT EXISTS "C" (
+       "ID"	VARCHAR(50) NOT NULL,
+     "Name"	VARCHAR(50) NOT NULL,
+   "Tabela"	VARCHAR(50) NOT NULL
+);
+INSERT INTO "A" VALUES ('1','Filip','A');
+INSERT INTO "A" VALUES ('2','Jovan','A');
+INSERT INTO "A" VALUES ('3','Laza','A');
+INSERT INTO "A" VALUES ('4','Jana','A');
+INSERT INTO "A" VALUES ('5','Brale','A');
+INSERT INTO "B" VALUES ('1','Filip','B');
+INSERT INTO "B" VALUES ('2','Jovan','B');
+INSERT INTO "B" VALUES ('3','Laza','B');
+INSERT INTO "B" VALUES ('4','Jana','B');
+INSERT INTO "C" VALUES ('1','Filip','C');
+INSERT INTO "C" VALUES ('4','Jana','C');

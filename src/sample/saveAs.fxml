@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane minHeight="185.0" minWidth="300.0" prefHeight="253.0" prefWidth="330.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SaveAsController">
+   <RadioButton fx:id="sqlRadioButton" layoutX="69.0" layoutY="103.0" onAction="#sqlSaveSelected" selected="true" text="SQL">
+      <toggleGroup>
+         <ToggleGroup fx:id="exportGroup" />
+      </toggleGroup>
+   </RadioButton>
+   <RadioButton fx:id="customRadioButton" layoutX="167.0" layoutY="103.0" onAction="#wylSaveSelected" text="WYL" toggleGroup="$exportGroup" />
+   <!-- Label za putanju fajla -->
+   <Label text="Save Directory" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+
+   <!-- TextField za prikaz putanje fajla -->
+   <TextField fx:id="filePathField" editable="false" prefHeight="25.0" prefWidth="328.0" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="88.0" AnchorPane.topAnchor="30" />
+
+   <!-- Dugme za biranje fajla -->
+   <Button fx:id="browseButton" onAction="#browseBtn" prefWidth="70.0" text="Browse" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="30" />
+
+   <!-- Radio dugmad za izbor tipa izvoza -->
+   <VBox spacing="10" AnchorPane.leftAnchor="10" AnchorPane.topAnchor="80" />
+
+   <!-- Dugmad za Cancel i Export -->
+   <Button fx:id="cancelButton" onAction="#cancelExportBtn" text="Cancel" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" />
+   <Button fx:id="saveButton" onAction="#completeExportBtn" text="Save" AnchorPane.bottomAnchor="10" AnchorPane.rightAnchor="10" />
+   <Label layoutX="11.0" layoutY="66.0" text="Save Format:" />
+</AnchorPane>

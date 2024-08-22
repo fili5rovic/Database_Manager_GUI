@@ -1,0 +1,9 @@
+START_TABLE "Avion"
+   "IDAviona"
+   "Ime"
+   "GodinaProizvodnje"
+END_TABLE
+START_DATA
+            ["Avion"] ADD ['3','MIG_24','1984']
+            ["Avion"] ADD ['2','MIG_25','1985']
+END_DATA
