@@ -1,9 +1,6 @@
 package controller;
 
 import db.DBManager;
-import javafx.event.EventHandler;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import utility.Animator;
 import utility.AutoSuggestions;
 import utility.FileHelper;
@@ -198,8 +195,6 @@ public class DashboardController extends ControllerBase {
             if(isSaved)
                 isSaved = query.toLowerCase().contains("select") || query.toLowerCase().contains("show");
         }
-        if(!isSaved)
-            System.out.println("UNSAVED");
 
     }
 
@@ -287,7 +282,7 @@ public class DashboardController extends ControllerBase {
         dbManager.outputTableNames();
         populateTreeView();
         isSaved = true;
-        System.out.println("SAVED");
+//        System.out.println("SAVED");
     }
 
     /**
@@ -369,9 +364,7 @@ public class DashboardController extends ControllerBase {
 
         double goodDividerPosition = 0.961 - table.getItems().size() * 0.032467;
         if (mainSplitPane.getDividers().get(0).getPosition() > goodDividerPosition) {
-            Animator.animateDividerPosition(mainSplitPane, goodDividerPosition, Duration.millis(30), () -> {
-                tabPane.requestFocus();
-            });
+            Animator.animateDividerPosition(mainSplitPane, goodDividerPosition, Duration.millis(30), () -> tabPane.requestFocus());
         }
     }
 
@@ -421,20 +414,18 @@ public class DashboardController extends ControllerBase {
      * Adds listeners to the UI components.
      */
     private void listeners() {
-        sideSplitPane.getDividers().forEach(divider -> {
-            divider.positionProperty().addListener((observable, oldValue, newValue) -> {
-                double minPosition = 0.1321;
-                double maxPosition = 0.4;
+        sideSplitPane.getDividers().forEach(divider -> divider.positionProperty().addListener((observable, oldValue, newValue) -> {
+            double minPosition = 0.1321;
+            double maxPosition = 0.4;
 
-                if (newValue.doubleValue() < minPosition) {
-                    divider.setPosition(minPosition);
-                }
+            if (newValue.doubleValue() < minPosition) {
+                divider.setPosition(minPosition);
+            }
 
-                if (newValue.doubleValue() > maxPosition) {
-                    divider.setPosition(maxPosition);
-                }
-            });
-        });
+            if (newValue.doubleValue() > maxPosition) {
+                divider.setPosition(maxPosition);
+            }
+        }));
 
         codeTextArea.addEventFilter(ScrollEvent.SCROLL, event -> {
             if (event.isControlDown()) {
@@ -507,18 +498,14 @@ public class DashboardController extends ControllerBase {
      */
     @FXML
     private void maximizeConsole() {
-        Animator.animateDividerPosition(mainSplitPane, 0.0, Duration.millis(200), () -> {
-            tabPane.requestFocus();
-        });
+        Animator.animateDividerPosition(mainSplitPane, 0.0, Duration.millis(200), () -> tabPane.requestFocus());
     }
     /**
      * Button action that closes the console.
      */
     @FXML
     private void closeConsole() {
-        Animator.animateDividerPosition(mainSplitPane, 1.0, Duration.millis(200), () -> {
-            tabPane.requestFocus();
-        });
+        Animator.animateDividerPosition(mainSplitPane, 1.0, Duration.millis(200), () -> tabPane.requestFocus());
     }
     /**
      * Selects the light theme.
@@ -628,12 +615,8 @@ public class DashboardController extends ControllerBase {
      * @param e {@link WindowEvent} object.
      */
     public void onAppClose(WindowEvent e) {
-        System.out.println("Closing...");
-        System.out.println("SAVED: " + isSaved);
         if(isSaved)
             return;
-
-        System.out.println("SAVING PROCESS");
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Changes may be unsaved");
@@ -689,9 +672,5 @@ public class DashboardController extends ControllerBase {
     }
     public List<List<String>> getColumnNames() {
         return columnNames;
-    }
-
-    public CodeArea getCodeArea() {
-        return codeAreaRichFX;
     }
 }
