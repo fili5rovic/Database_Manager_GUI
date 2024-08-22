@@ -42,8 +42,8 @@
 }
 
 .lineno {
-    -fx-text-fill: #707070; /* Boja za brojače linija, svetlosiva za tamnu temu */
-    -fx-font-size: 24px; /* Prilagodi veličinu fonta ako je potrebno */
+    -fx-text-fill: #707070;
+    -fx-font-size: 24px;
     -fx-background-color: #313131;
 }
 /*</editor-fold>*/
@@ -57,7 +57,7 @@
     -fx-border-color: #66cc66;
     -fx-border-width: 2px;
     -fx-cursor: hand;
-    -fx-alignment: center; /* Poravnanje teksta sa leve strane */
+    -fx-alignment: center;
 }
 
 #runBtn:hover {
@@ -76,11 +76,11 @@
     -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-background-color: #1e1e1e;
-    -fx-text-fill: #be2323; /* Ova linija postavlja boju teksta na crno */
+    -fx-text-fill: #be2323;
 }
 
 .error-area .content {
-    -fx-background-color: #1e1e1e; /* Još tamnija pozadina za TextArea */
+    -fx-background-color: #1e1e1e;
 }
 
 /*<editor-fold desc="Dialog pane">*/
@@ -123,40 +123,40 @@
 
 /* Osnovna pozadina aplikacije */
 .root {
-    -fx-background-color: #2e2e2e; /* Tamno siva pozadina */
+    -fx-background-color: #2e2e2e;
 }
 
 /* Stil za AnchorPane */
 .anchor-pane {
-    -fx-background-color: #414040; /* Crna pozadina za AnchorPane */
+    -fx-background-color: #414040;
 }
 
 /*<editor-fold desc="Menu">*/
 /* Stil za MenuBar */
 .menu-bar {
-    -fx-background-color: #2e2e2e; /* Tamna pozadina za MenuBar */
+    -fx-background-color: #2e2e2e;
     -fx-padding: 5px;
 }
 
 /* Stil za Menu */
 .menu {
-    -fx-background-color: #212121; /* Tamna pozadina za Menu */
+    -fx-background-color: #212121;
     -fx-background-radius: 5;
     -fx-padding: 5px;
 }
 
 .menu:hover {
-    -fx-background-color: #484848; /* Tamna pozadina za Menu */
+    -fx-background-color: #484848;
     -fx-cursor: HAND;
 }
 
 .menu .label {
-    -fx-text-fill: #a1a1a1; /* Bele boje teksta */
+    -fx-text-fill: #a1a1a1;
     -fx-alignment: CENTER;
     -fx-padding: 0 10 0 10;
 }
 
-.menu-item{
+.menu-item {
     -fx-background-radius: 0;
     -fx-border-width: 0;
     border-width: 0;

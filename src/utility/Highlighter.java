@@ -35,7 +35,7 @@ public class Highlighter {
      */
     private static StyleSpans<Collection<String>> computeHighlighting(String text, List<String> tableNames) {
         String[] patterns = {
-                "(?i)\\b(?:SELECT|FROM|WHERE|INSERT|INTO|VALUES|AND|OR|SHOW|TABLES|DELETE|CREATE|TABLE|DROP|UPDATE|SET|ON|JOIN)\\b",
+                "(?i)\\b(?:SELECT|FROM|WHERE|INSERT|INTO|VALUES|AND|OR|SHOW|TABLES|DELETE|CREATE|TABLE|DROP|UPDATE|SET|ON|JOIN|INNER)\\b",
                 "\\*|=",
                 "\"([^\"]*)\"",
                 "'([^']*)'",
