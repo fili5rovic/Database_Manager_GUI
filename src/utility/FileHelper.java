@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileHelper {
     public static File selectDatabaseFile(String path, Stage currentStage) {
@@ -32,6 +34,31 @@ public class FileHelper {
         }
         return sb.toString();
     }
+
+    public static String readFromFileNoDuplicates(String path) {
+        StringBuilder sb = new StringBuilder();
+        List<String> lines = new ArrayList<>();
+        boolean isFirstLine = true;
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (!lines.contains(line)) {
+                    if(isFirstLine) {
+                        isFirstLine = false;
+                    } else {
+                        lines.add(line);
+                    }
+                    sb.append(line).append('\n');
+                }
+            }
+            if (sb.length() > 0)
+                sb.deleteCharAt(sb.length() - 1);
+        } catch (IOException e) {
+            System.out.println("Couldn't read file " + path);
+        }
+        return sb.toString();
+    }
+
 
     public static String convertSQLToWYL(String sql) {
         StringBuilder wyl = new StringBuilder();

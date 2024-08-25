@@ -22,6 +22,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * The DashboardController class is responsible for managing the user interface and functionality
@@ -139,6 +140,9 @@ public class DashboardController extends ControllerBase {
      */
     private String savePath = "";
 
+    private boolean distinct;
+
+
     /**
      * Initializes the controller class. This method is automatically called after the FXML file has been loaded.
      *
@@ -182,17 +186,23 @@ public class DashboardController extends ControllerBase {
      */
     public void runButton() {
         String queries = codeAreaRichFX.getText();
-        for(String query : queries.split(";")) {
+        for (String query : queries.split(";")) {
             query = query.replace('\n', ' ').trim();
-            if(query.isEmpty())
+            if (query.isEmpty())
                 continue;
+
+            Pattern pattern = Pattern.compile("SELECT\\s+DISTINCT\\s+.*", Pattern.CASE_INSENSITIVE);
+            distinct = pattern.matcher(query).matches();
+            query = query.replaceAll("(?i)DISTINCT", "");
+
+
             dbManager.doQuery(query);
             tableOutput();
             if (query.toLowerCase().contains("create") || query.toLowerCase().contains("drop")) {
                 dbManager.outputTableNames();
                 populateTreeView();
             }
-            if(isSaved)
+            if (isSaved)
                 isSaved = query.toLowerCase().contains("select") || query.toLowerCase().contains("show");
         }
 
@@ -202,7 +212,7 @@ public class DashboardController extends ControllerBase {
      * Updates the output tables by reading from the output and error files.
      */
     public void tableOutput() {
-        this.outputString = FileHelper.readFromFile("output.txt");
+        this.outputString = distinct ? FileHelper.readFromFileNoDuplicates("output.txt") : FileHelper.readFromFile("output.txt");
         this.errorString = FileHelper.readFromFile("error.txt");
         updateOutputTables();
     }
@@ -214,7 +224,7 @@ public class DashboardController extends ControllerBase {
         Stage stage = new Stage();
         WindowEvent event = new WindowEvent(stage, WindowEvent.WINDOW_SHOWN);
         onAppClose(event);
-        if(event.isConsumed())
+        if (event.isConsumed())
             return;
 
         String path = System.getProperty("user.dir") + "\\src\\sample\\empty";
@@ -230,13 +240,14 @@ public class DashboardController extends ControllerBase {
 
     /**
      * Handles the action for the Load Database menu item.
+     *
      * @param currStage The current stage.
      */
     public void loadDbMenuItem(Stage currStage) {
         Stage stage = new Stage();
         WindowEvent event = new WindowEvent(stage, WindowEvent.WINDOW_SHOWN);
         onAppClose(event);
-        if(event.isConsumed())
+        if (event.isConsumed())
             return;
 
         String path = System.getProperty("user.dir");
@@ -389,11 +400,11 @@ public class DashboardController extends ControllerBase {
         tableNames.clear();
         columnNames.clear();
         for (String content : fileContent) {
-            if(content.trim().isEmpty())
+            if (content.trim().isEmpty())
                 continue;
             ArrayList<String> columns = new ArrayList<>();
-            for(String column : content.split("\\|")[1].split(",")) {
-                if(!column.trim().isEmpty())
+            for (String column : content.split("\\|")[1].split(",")) {
+                if (!column.trim().isEmpty())
                     columns.add(column);
             }
             columnNames.add(columns);
@@ -500,6 +511,7 @@ public class DashboardController extends ControllerBase {
     private void maximizeConsole() {
         Animator.animateDividerPosition(mainSplitPane, 0.0, Duration.millis(200), () -> tabPane.requestFocus());
     }
+
     /**
      * Button action that closes the console.
      */
@@ -507,6 +519,7 @@ public class DashboardController extends ControllerBase {
     private void closeConsole() {
         Animator.animateDividerPosition(mainSplitPane, 1.0, Duration.millis(200), () -> tabPane.requestFocus());
     }
+
     /**
      * Selects the light theme.
      */
@@ -514,6 +527,7 @@ public class DashboardController extends ControllerBase {
     private void lightThemeBtn() {
         utility.ThemeSelector.setTheme("light_theme", Window.WINDOW_DASHBOARD);
     }
+
     /**
      * Selects the dark theme.
      */
@@ -529,6 +543,7 @@ public class DashboardController extends ControllerBase {
     private void deleteSQLQuery() {
         codeAreaRichFX.clear();
     }
+
     /**
      * Gets called upon saving as .sql database.
      */
@@ -572,6 +587,7 @@ public class DashboardController extends ControllerBase {
             deleteSQLQuery();
         }
     }
+
     /**
      * Button action for showing selected table in TreeView.
      */
@@ -592,7 +608,7 @@ public class DashboardController extends ControllerBase {
     @FXML
     private void saveMenuBtn() {
         System.out.println(savePath);
-        if(savePath.isEmpty()) {
+        if (savePath.isEmpty()) {
             saveCustomFormatBtn();
         } else {
             File file = new File(savePath);
@@ -612,10 +628,11 @@ public class DashboardController extends ControllerBase {
 
     /**
      * Method gets called on app closing. Checks if user wants to quit with unsaved work.
+     *
      * @param e {@link WindowEvent} object.
      */
     public void onAppClose(WindowEvent e) {
-        if(isSaved)
+        if (isSaved)
             return;
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -653,14 +670,17 @@ public class DashboardController extends ControllerBase {
 
     /**
      * Sets save path.
+     *
      * @param path Path to save.
      */
     public void setSavePath(String path) {
         savePath = path;
         isSaved = true;
     }
+
     /**
      * Datbase manager getter.
+     *
      * @return {@link DBManager} object.
      */
     public DBManager getDbManager() {
@@ -670,6 +690,7 @@ public class DashboardController extends ControllerBase {
     public List<String> getTableNames() {
         return tableNames;
     }
+
     public List<List<String>> getColumnNames() {
         return columnNames;
     }

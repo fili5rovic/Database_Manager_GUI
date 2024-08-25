@@ -1,3 +1,7 @@
-Professor|ProfessorID,Name,Surname,Age,
-Student|ID,Name,Surname,
-Grades|Index,SubName,Grade,
+Student
+ID|Name|
+192|x|
+589|Jovan|
+175|Lazar|
+445|Ilija|
+192|x|
