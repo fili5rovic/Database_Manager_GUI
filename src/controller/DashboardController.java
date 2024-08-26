@@ -33,21 +33,6 @@ import java.util.regex.Pattern;
 public class DashboardController extends ControllerBase {
 
     /**
-     * The menu bar in the dashboard window.
-     */
-    @FXML
-    private MenuBar menuBar;
-    /**
-     * The menu item for creating a new database.
-     */
-    @FXML
-    private MenuItem newDbOption;
-    /**
-     * The menu item for loading a database.
-     */
-    @FXML
-    private MenuItem loadDbOption;
-    /**
      * The main split pane.
      */
     @FXML
@@ -146,6 +131,7 @@ public class DashboardController extends ControllerBase {
     private int aggregateNumber;
 
     private int limit = 0;
+    private int offset = 0;
     private List<String> orderByStrings = new ArrayList<>();
 
     private List<Aggregate> aggregateList = new ArrayList<>();
@@ -192,7 +178,12 @@ public class DashboardController extends ControllerBase {
      * Handles the action for the run button, executing the SQL queries from the CodeArea.
      */
     public void runButton() {
-        String queries = codeAreaRichFX.getText();
+        String queries;
+        if(codeAreaRichFX.getSelectedText().isEmpty())
+            queries = codeAreaRichFX.getText();
+        else
+            queries = codeAreaRichFX.getSelectedText();
+
         for (String query : queries.split(";")) {
             query = query.replace('\n', ' ').trim();
             if (query.isEmpty())
@@ -210,17 +201,22 @@ public class DashboardController extends ControllerBase {
                 return;
             }
 
-            checkForLimit(query);
-            if (query.toLowerCase().contains("limit"))
-                query = query.toLowerCase().split("limit")[0];
+            if(query.toLowerCase().contains("select")) {
+                checkForLimit(query);
+                if (query.toLowerCase().contains("limit"))
+                    query = query.toLowerCase().split("limit")[0].trim();
+                if(query.toLowerCase().contains("offset"))
+                    query = query.toLowerCase().split("offset")[0].trim();
 
-            checkForOrderBy(query);
-            if(query.toLowerCase().contains("order"))
-                query = query.toLowerCase().split("order")[0];
-            if(query.toLowerCase().contains("by"))
-                query = query.toLowerCase().split("by")[0];
+                checkForOrderBy(query);
+                if(query.toLowerCase().contains("order"))
+                    query = query.toLowerCase().split("order")[0].trim();
+                if(query.toLowerCase().contains("by"))
+                    query = query.toLowerCase().split("by")[0].trim();
 
-            query = query.replaceAll(Aggregate.getPattern().toString(), "$1");
+                query = query.replaceAll(Aggregate.getPattern().toString(), "$1");
+            }
+
             dbManager.doQuery(query);
             tableOutput();
             if (query.toLowerCase().contains("create") || query.toLowerCase().contains("drop")) {
@@ -248,10 +244,17 @@ public class DashboardController extends ControllerBase {
 
     private void checkForLimit(String query) {
         limit = 0;
+        offset = 0;
         if(!query.toLowerCase().contains("limit"))
             return;
         String limitStr = query.toLowerCase().split("limit")[1];
-        limit = Integer.parseInt(limitStr.trim());
+        if(limitStr.contains("offset")) {
+            String[] limitOffset = limitStr.split("offset");
+            limit = Integer.parseInt(limitOffset[0].trim());
+            offset = Integer.parseInt(limitOffset[1].trim());
+        } else
+            limit = Integer.parseInt(limitStr.trim());
+
         if(limit < 0)
             limit = 0;
     }
@@ -310,11 +313,11 @@ public class DashboardController extends ControllerBase {
             this.aggregateNumber = 0;
         }
 
-        if(limit > 0)
-            FileHelper.limitFileLines(limit+2, "output.txt");
-
         if(!orderByStrings.isEmpty())
             utility.OrderBy.writeOrderedToFile("output.txt", orderByStrings);
+
+        if(limit > 0 || offset > 0)
+            FileHelper.limitFileLines(limit, offset,"output.txt");
 
         if(distinct)
             this.outputString = FileHelper.readFromFileNoDuplicates("output.txt");
@@ -753,7 +756,7 @@ public class DashboardController extends ControllerBase {
         alert.setHeaderText("Unsaved changes");
 
         String theme = "../" + FileHelper.readFromFile("src/default_theme/default-theme.txt");
-        alert.getDialogPane().getStylesheets().add(getClass().getResource(theme).toExternalForm());
+        alert.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource(theme)).toExternalForm());
 
         alert.setContentText("Do you want to save your changes before exiting?");
 

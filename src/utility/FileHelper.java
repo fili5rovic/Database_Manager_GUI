@@ -39,7 +39,7 @@ public class FileHelper {
         }
     }
 
-    public static void limitFileLines(int num, String path) {
+    public static void limitFileLines(int limit,int offset, String path) {
         List<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String line;
@@ -51,15 +51,24 @@ public class FileHelper {
             return;
         }
 
-        if (lines.size() > num) {
-            lines = lines.subList(0, num);
-            try (java.io.FileWriter fw = new java.io.FileWriter(path)) {
-                for (String line : lines) {
-                    fw.write(line + System.lineSeparator());
+        offset = Math.min(offset, lines.size());
+        try (java.io.FileWriter fw = new java.io.FileWriter(path)) {
+            System.out.println("LIMIT: " + limit + " OFFSET: " + offset);
+            fw.write(lines.get(0) + System.lineSeparator()); // table name
+            fw.write(lines.get(1) + System.lineSeparator()); // table columns
+            for (int i = 2; i < lines.size(); i++) {
+                if (limit == 0) {
+                    break;
                 }
-            } catch (IOException e) {
-                System.out.println("Couldn't write to file " + path);
+                if(offset > 0) {
+                    offset--;
+                } else {
+                    fw.write(lines.get(i) + System.lineSeparator());
+                    limit--;
+                }
             }
+        } catch (IOException e) {
+            System.out.println("Couldn't write to file " + path);
         }
     }
 
