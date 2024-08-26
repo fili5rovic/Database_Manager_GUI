@@ -57,7 +57,7 @@ public class OrderBy {
         for (String order : orderBy) {
             String[] parts = order.split(" ");
             String column = parts[0].toLowerCase();
-            boolean ascending = parts[1].equalsIgnoreCase("ASC");
+            boolean ascending = parts.length == 1 || parts[1].equalsIgnoreCase("ASC");
 
             Comparator<String[]> columnComparator = Comparator.comparing(row -> row[columnMap.get(column)]);
             if (!ascending) {

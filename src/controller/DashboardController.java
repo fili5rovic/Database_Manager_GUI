@@ -239,7 +239,6 @@ public class DashboardController extends ControllerBase {
             orderBy[i] = orderBy[i].trim();
             orderByStrings.add(orderBy[i]);
         }
-
     }
 
     private void checkForLimit(String query) {
