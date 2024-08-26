@@ -1,6 +1,6 @@
 Student
-ID|ID|ID|ID|ID|
-192|192|192|192|192|
-589|589|589|589|589|
-175|175|175|175|175|
-445|445|445|445|445|
+ID|Name|Surname|
+192|Filip|Petrovic|
+589|Jovan|Mosurovic|
+175|Lazar|Stankovic|
+445|Ilija|Jankovic|

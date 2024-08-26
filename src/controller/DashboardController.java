@@ -144,6 +144,9 @@ public class DashboardController extends ControllerBase {
 
     private boolean distinct;
     private int aggregateNumber;
+
+    private int limit = 0;
+
     private List<Aggregate> aggregateList = new ArrayList<>();
 
     /**
@@ -206,6 +209,10 @@ public class DashboardController extends ControllerBase {
                 return;
             }
 
+            checkForLimit(query);
+            if (query.toLowerCase().contains("limit"))
+                query = query.toLowerCase().split("limit")[0];
+
             query = query.replaceAll(Aggregate.getPattern().toString(), "$1");
             dbManager.doQuery(query);
             tableOutput();
@@ -217,6 +224,16 @@ public class DashboardController extends ControllerBase {
                 isSaved = query.toLowerCase().contains("select") || query.toLowerCase().contains("show");
         }
 
+    }
+
+    private void checkForLimit(String query) {
+        limit = 0;
+        if(!query.toLowerCase().contains("limit"))
+            return;
+        String limitStr = query.toLowerCase().split("limit")[1];
+        limit = Integer.parseInt(limitStr.trim());
+        if(limit < 0)
+            limit = 0;
     }
 
     private boolean checkForAggregates(String query) {
@@ -254,10 +271,7 @@ public class DashboardController extends ControllerBase {
      * Updates the output tables by reading from the output and error files.
      */
     public void tableOutput() {
-        if(distinct)
-            this.outputString = FileHelper.readFromFileNoDuplicates("output.txt");
-        else
-            this.outputString = FileHelper.readFromFile("output.txt");
+
         if(this.aggregateNumber > 0) {
             StringBuilder finalOutput = new StringBuilder();
             String[] aggregateStrings = new String[this.aggregateNumber];
@@ -273,9 +287,17 @@ public class DashboardController extends ControllerBase {
                 finalOutput.append(aggregateStrings[i].split("\n")[2]);
             }
             System.out.println(finalOutput);
-            this.outputString = finalOutput.toString();
+            FileHelper.writeToFile("output.txt", finalOutput.toString());
             this.aggregateNumber = 0;
         }
+
+        if(limit > 0)
+            FileHelper.limitFileLines(limit+2, "output.txt");
+
+        if(distinct)
+            this.outputString = FileHelper.readFromFileNoDuplicates("output.txt");
+        else
+            this.outputString = FileHelper.readFromFile("output.txt");
 
         this.errorString = FileHelper.readFromFile("error.txt");
         updateOutputTables();
