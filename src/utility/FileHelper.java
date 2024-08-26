@@ -35,6 +35,16 @@ public class FileHelper {
         return sb.toString();
     }
 
+    public static void writeToFile(String path, String content) {
+        try (java.io.FileWriter fw = new java.io.FileWriter(path)) {
+            fw.write(content);
+        } catch (IOException e) {
+            System.out.println("Couldn't write to file " + path);
+        }
+    }
+
+
+
     public static String readFromFileNoDuplicates(String path) {
         StringBuilder sb = new StringBuilder();
         List<String> lines = new ArrayList<>();

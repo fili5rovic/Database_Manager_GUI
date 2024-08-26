@@ -1,5 +1,6 @@
 package controller;
 
+import aggregate.Aggregate;
 import db.DBManager;
 import utility.Animator;
 import utility.AutoSuggestions;
@@ -22,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -141,7 +143,8 @@ public class DashboardController extends ControllerBase {
     private String savePath = "";
 
     private boolean distinct;
-
+    private int aggregateNumber;
+    private List<Aggregate> aggregateList = new ArrayList<>();
 
     /**
      * Initializes the controller class. This method is automatically called after the FXML file has been loaded.
@@ -191,11 +194,19 @@ public class DashboardController extends ControllerBase {
             if (query.isEmpty())
                 continue;
 
-            Pattern pattern = Pattern.compile("SELECT\\s+DISTINCT\\s+.*", Pattern.CASE_INSENSITIVE);
-            distinct = pattern.matcher(query).matches();
-            query = query.replaceAll("(?i)DISTINCT", "");
+            String oldQuery = query;
+            query = query.replaceAll("(?i)SELECT\\s+DISTINCT\\s+", "select ");
+            distinct = !oldQuery.equals(query);
 
+            boolean hadError = checkForAggregates(query);
+            if(hadError) {
+                addErrorTab();
+                this.errorString = FileHelper.readFromFile("error.txt");
+                updateOutputTables();
+                return;
+            }
 
+            query = query.replaceAll(Aggregate.getPattern().toString(), "$1");
             dbManager.doQuery(query);
             tableOutput();
             if (query.toLowerCase().contains("create") || query.toLowerCase().contains("drop")) {
@@ -208,11 +219,64 @@ public class DashboardController extends ControllerBase {
 
     }
 
+    private boolean checkForAggregates(String query) {
+        aggregateNumber = 0;
+        aggregateList.clear();
+
+        Pattern pattern = Aggregate.getPattern();
+        Matcher matcher = pattern.matcher(query);
+        if(matcher.find()) {
+            aggregateNumber = query.split(",").length;
+            for(int i = 0; i < aggregateNumber; i++) {
+                String currentParam = query.split(",")[i];
+                if(currentParam.toLowerCase().contains("sum")) {
+                    aggregateList.add(new aggregate.Sum());
+                } else if(currentParam.toLowerCase().contains("avg")) {
+                    aggregateList.add(new aggregate.Avg());
+                } else if(currentParam.toLowerCase().contains("count")) {
+                    System.out.println("COUNT");
+                    aggregateList.add(new aggregate.Count());
+                } else if(currentParam.toLowerCase().contains("min")) {
+                    aggregateList.add(new aggregate.Min());
+                } else if(currentParam.toLowerCase().contains("max")) {
+                    aggregateList.add(new aggregate.Max());
+                } else {
+                    FileHelper.writeToFile("error.txt", "[RUNTIME_ERROR] Different number of rows in table!");
+                    aggregateNumber = i;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Updates the output tables by reading from the output and error files.
      */
     public void tableOutput() {
-        this.outputString = distinct ? FileHelper.readFromFileNoDuplicates("output.txt") : FileHelper.readFromFile("output.txt");
+        if(distinct)
+            this.outputString = FileHelper.readFromFileNoDuplicates("output.txt");
+        else
+            this.outputString = FileHelper.readFromFile("output.txt");
+        if(this.aggregateNumber > 0) {
+            StringBuilder finalOutput = new StringBuilder();
+            String[] aggregateStrings = new String[this.aggregateNumber];
+            for(int i = 0; i < this.aggregateNumber; i++) {
+                aggregateStrings[i] = aggregateList.get(i).executeAggregate("output.txt", i);
+            }
+            finalOutput.append(aggregateStrings[0].split("\n")[0]).append("\n");
+            for(int i = 0; i < this.aggregateNumber; i++) {
+                finalOutput.append(aggregateStrings[i].split("\n")[1]);
+            }
+            finalOutput.append("\n");
+            for(int i = 0; i < this.aggregateNumber; i++) {
+                finalOutput.append(aggregateStrings[i].split("\n")[2]);
+            }
+            System.out.println(finalOutput);
+            this.outputString = finalOutput.toString();
+            this.aggregateNumber = 0;
+        }
+
         this.errorString = FileHelper.readFromFile("error.txt");
         updateOutputTables();
     }
@@ -361,6 +425,8 @@ public class DashboardController extends ControllerBase {
 
             tableColumn.setCellValueFactory(data -> javafx.beans.binding.Bindings.createObjectBinding(() -> {
                 String[] rowData = data.getValue();
+                if(rowData.length <= columnIndex)
+                    return "";
                 return rowData[columnIndex];
             }));
 

@@ -1,14 +1,11 @@
 package utility;
 
 import controller.DashboardController;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -52,7 +49,7 @@ public class AutoSuggestions {
         codeCompletionContextMenu.hide();
 
 
-        Pattern columnMatcher = Pattern.compile("(?:select|where|and|or)\\s+$|,\\s*$|\\.$", Pattern.CASE_INSENSITIVE);
+        Pattern columnMatcher = Pattern.compile("(?:select|where|and|or)\\s+$|,\\s*$|(?:\\.|\\()$", Pattern.CASE_INSENSITIVE);
         Pattern tableMatcher = Pattern.compile("(?:from|join)\\s+$", Pattern.CASE_INSENSITIVE);
 
         Matcher fromMatcher = tableMatcher.matcher(currentText);
