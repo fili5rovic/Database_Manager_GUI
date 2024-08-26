@@ -146,6 +146,7 @@ public class DashboardController extends ControllerBase {
     private int aggregateNumber;
 
     private int limit = 0;
+    private List<String> orderByStrings = new ArrayList<>();
 
     private List<Aggregate> aggregateList = new ArrayList<>();
 
@@ -213,6 +214,12 @@ public class DashboardController extends ControllerBase {
             if (query.toLowerCase().contains("limit"))
                 query = query.toLowerCase().split("limit")[0];
 
+            checkForOrderBy(query);
+            if(query.toLowerCase().contains("order"))
+                query = query.toLowerCase().split("order")[0];
+            if(query.toLowerCase().contains("by"))
+                query = query.toLowerCase().split("by")[0];
+
             query = query.replaceAll(Aggregate.getPattern().toString(), "$1");
             dbManager.doQuery(query);
             tableOutput();
@@ -222,6 +229,19 @@ public class DashboardController extends ControllerBase {
             }
             if (isSaved)
                 isSaved = query.toLowerCase().contains("select") || query.toLowerCase().contains("show");
+        }
+    }
+
+    private void checkForOrderBy(String query) {
+        orderByStrings.clear();
+        query = query.toLowerCase().replace("order", "");
+        if(!query.toLowerCase().contains("by"))
+            return;
+        String orderByStr = query.toLowerCase().split("by")[1];
+        String[] orderBy = orderByStr.split(",");
+        for(int i = 0; i < orderBy.length; i++) {
+            orderBy[i] = orderBy[i].trim();
+            orderByStrings.add(orderBy[i]);
         }
 
     }
@@ -271,7 +291,6 @@ public class DashboardController extends ControllerBase {
      * Updates the output tables by reading from the output and error files.
      */
     public void tableOutput() {
-
         if(this.aggregateNumber > 0) {
             StringBuilder finalOutput = new StringBuilder();
             String[] aggregateStrings = new String[this.aggregateNumber];
@@ -294,12 +313,18 @@ public class DashboardController extends ControllerBase {
         if(limit > 0)
             FileHelper.limitFileLines(limit+2, "output.txt");
 
+        if(!orderByStrings.isEmpty())
+            utility.OrderBy.writeOrderedToFile("output.txt", orderByStrings);
+
         if(distinct)
             this.outputString = FileHelper.readFromFileNoDuplicates("output.txt");
         else
             this.outputString = FileHelper.readFromFile("output.txt");
 
         this.errorString = FileHelper.readFromFile("error.txt");
+        orderByStrings.clear();
+        limit = 0;
+        distinct = false;
         updateOutputTables();
     }
 

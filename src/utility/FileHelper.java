@@ -39,10 +39,6 @@ public class FileHelper {
         }
     }
 
-    public static void orderBy(String filePath, String... orderBy) throws IOException {
-
-    }
-
     public static void limitFileLines(int num, String path) {
         List<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
@@ -66,8 +62,6 @@ public class FileHelper {
             }
         }
     }
-
-
 
     public static String readFromFileNoDuplicates(String path) {
         StringBuilder sb = new StringBuilder();
@@ -136,14 +130,6 @@ public class FileHelper {
         return wyl.toString();
     }
 
-
-    public static void main(String[] args) {
-        try {
-            FileHelper.orderBy("output.txt", "ID DESC", "Name ASC");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 //    public static void main(String[] args) {
 //        System.out.println(convertSQLToWYL("CREATE TABLE IF NOT EXISTS \"Professor\" (\n" +
