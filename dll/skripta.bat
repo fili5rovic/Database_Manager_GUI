@@ -8,7 +8,7 @@ set /A COUNTER=%TOTAL_COMMANDS%
 cd /d "%~dp0..\src\db"
 
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… █▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 set /A COUNTER-=1
 javac -h . DBManager.java
 
@@ -16,21 +16,21 @@ rem Compile all .cpp files to object files
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ██▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 set /A COUNTER-=1
 g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" Create.cpp -o Create.o -m64
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ███▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 set /A COUNTER-=1
 g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" CustomFormat.cpp -o CustomFormat.o -m64
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -39,7 +39,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" Database
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… █████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -48,7 +48,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" DBManage
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ██████▒▒▒▒▒▒▒▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -57,7 +57,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" Delete.c
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ███████▒▒▒▒▒▒▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -66,7 +66,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" Drop.cpp
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ████████▒▒▒▒▒▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -75,7 +75,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" Equal.cp
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… █████████▒▒▒▒▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -84,7 +84,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" Filter.c
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ██████████▒▒▒▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -93,7 +93,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" Insert.c
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ███████████▒▒▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -102,7 +102,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" NotEqual
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ████████████▒▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -111,7 +111,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" QueryEdi
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… █████████████▒▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -120,7 +120,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" Record.c
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ██████████████▒▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -129,7 +129,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" Select.c
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ███████████████▒▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -138,7 +138,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" SQLForma
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ████████████████▒▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -147,7 +147,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" StringMa
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… █████████████████▒▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -156,7 +156,7 @@ g++ -std=c++17 -c -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" Table.cp
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ██████████████████▒▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -167,7 +167,7 @@ rem Link all object files into a single DLL
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ███████████████████▒ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 
 
@@ -176,7 +176,7 @@ g++ -shared -o native.dll -m64 Create.o CustomFormat.o Database.o DBManager.o De
 
 cls
 set /A current=%TOTAL_COMMANDS%-%COUNTER%
-echo Loading… ████████████████████ (%current%/%TOTAL_COMMANDS%)
+echo Loading…  (%current%/%TOTAL_COMMANDS%)
 
 rem Move the DLL to the specified directory
 set /A COUNTER-=1

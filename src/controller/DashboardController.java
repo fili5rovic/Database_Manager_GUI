@@ -809,4 +809,11 @@ public class DashboardController extends ControllerBase {
     public List<List<String>> getColumnNames() {
         return columnNames;
     }
+
+    public void undoCodeArea() {
+        codeAreaRichFX.undo();
+    }
+    public void redoCodeArea() {
+        codeAreaRichFX.redo();
+    }
 }

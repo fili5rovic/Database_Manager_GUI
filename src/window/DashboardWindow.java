@@ -16,13 +16,12 @@ public class DashboardWindow extends Window {
             String theme = "../" + FileHelper.readFromFile("src/default_theme/default-theme.txt");
             scene.getStylesheets().add(getClass().getResource(theme).toExternalForm());
             stage.setResizable(false);
-            stage.setTitle("Database Manager - Dashboard");
+            stage.setTitle("Database Manager");
             stage.setScene(scene);
 
             String iconPath = System.getProperty("user.dir") + "/pictures/icon.png";
             Image icon = new Image("file:" + iconPath);
             stage.getIcons().add(icon);
-
 
             this.stage = stage;
 
