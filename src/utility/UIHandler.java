@@ -147,7 +147,7 @@ public class UIHandler implements IUIManager {
 
         double goodDividerPosition = 0.961 - table.getItems().size() * 0.032467;
         if (mainSplitPane.getDividers().get(0).getPosition() > goodDividerPosition) {
-            Animator.animateDividerPosition(mainSplitPane, goodDividerPosition, Duration.millis(30), () -> tabPane.requestFocus());
+            Animator.animateDividerPosition(mainSplitPane, goodDividerPosition, Duration.millis(30), tabPane::requestFocus);
         }
     }
 
@@ -170,11 +170,11 @@ public class UIHandler implements IUIManager {
     }
 
     public void maximizeConsole() {
-        Animator.animateDividerPosition(mainSplitPane, 0.0, Duration.millis(200), () -> tabPane.requestFocus());
+        Animator.animateDividerPosition(mainSplitPane, 0.0, Duration.millis(200), tabPane::requestFocus);
     }
 
     public void closeConsole() {
-        Animator.animateDividerPosition(mainSplitPane, 1.0, Duration.millis(200), () -> tabPane.requestFocus());
+        Animator.animateDividerPosition(mainSplitPane, 1.0, Duration.millis(200), tabPane::requestFocus);
     }
 
     public List<String> getTableNames() {

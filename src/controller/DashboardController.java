@@ -107,9 +107,9 @@ public class DashboardController extends ControllerBase {
 
     private int limit = 0;
     private int offset = 0;
-    private List<String> orderByStrings = new ArrayList<>();
+    private final List<String> orderByStrings = new ArrayList<>();
 
-    private List<Aggregate> aggregateList = new ArrayList<>();
+    private final List<Aggregate> aggregateList = new ArrayList<>();
 
     /**
      * Initializes the controller class. This method is automatically called after the FXML file has been loaded.
