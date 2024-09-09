@@ -7,7 +7,6 @@
 <?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.TreeView?>
@@ -69,11 +68,6 @@
                            </children></AnchorPane>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="783.0" prefWidth="1007.0">
                            <children>
-                              <TextArea fx:id="codeTextArea" layoutX="6.0" layoutY="27.0" prefHeight="429.0" prefWidth="1029.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="6.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="27.0">
-                                 <font>
-                                    <Font name="Courier New" size="24.0" />
-                                 </font>
-                              </TextArea>
                               <CodeArea fx:id="codeAreaRichFX" layoutX="6.0" layoutY="27.0" lineHighlighterOn="true" prefHeight="727.0" prefWidth="1029.0" />
                            </children>
                         </AnchorPane>

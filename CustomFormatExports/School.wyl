@@ -1,3 +1,9 @@
+START_TABLE "Professor"
+   "ProfessorID"
+   "Name"
+   "Surname"
+   "Age"
+END_TABLE
 START_TABLE "Student"
    "ID"
    "Name"
@@ -8,19 +14,13 @@ START_TABLE "Grades"
    "SubName"
    "Grade"
 END_TABLE
-START_TABLE "Professor"
-   "ProfessorID"
-   "Name"
-   "Surname"
-   "Age"
-END_TABLE
 START_DATA
+  ["Professor"] ADD ['100','Tatjana','Lutovac','48']
     ["Student"] ADD ['192','Filip','Petrovic']
     ["Student"] ADD ['589','Jovan','Mosurovic']
     ["Student"] ADD ['175','Lazar','Stankovic']
     ["Student"] ADD ['445','Ilija','Jankovic']
-    ["Grades"] ADD ['192','Fizika','7']
-    ["Grades"] ADD ['589','Fizika','7']
-    ["Grades"] ADD ['175','Fizika','7']
-  ["Professor"] ADD ['100','Tatjana','Lutovac','48']
+     ["Grades"] ADD ['192','Fizika','7']
+     ["Grades"] ADD ['589','Fizika','7']
+     ["Grades"] ADD ['175','Fizika','7']
 END_DATA

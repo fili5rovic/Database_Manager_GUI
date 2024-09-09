@@ -2,17 +2,11 @@ package controller;
 
 import aggregate.Aggregate;
 import db.DBManager;
-import utility.Animator;
-import utility.AutoSuggestions;
-import utility.FileHelper;
+import utility.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.util.Duration;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.PlainTextChange;
 import window.Window;
@@ -42,11 +36,6 @@ public class DashboardController extends ControllerBase {
      */
     @FXML
     private SplitPane sideSplitPane;
-    /**
-     * The textArea used in case CodeArea is not working properly.
-     */
-    @FXML
-    private TextArea codeTextArea;
     /**
      * The code area for the SQL code.
      */
@@ -110,22 +99,8 @@ public class DashboardController extends ControllerBase {
      */
     private DBManager dbManager;
 
-
-    /**
-     * List of table names.
-     */
-    private List<String> tableNames = new ArrayList<>(); //TODO koristi stream negde i STL
-    private List<List<String>> columnNames = new ArrayList<>();
-
-    /**
-     * Used for checking if the database is saved.
-     */
-    private boolean isSaved = false;
-
-    /**
-     * The path to save the database.
-     */
-    private String savePath = "";
+    private DatabaseHandler databaseHandler;
+    private UIHandler uiHandler;
 
     private boolean distinct;
     private int aggregateNumber;
@@ -148,10 +123,11 @@ public class DashboardController extends ControllerBase {
         setCssClasses();
         listeners();
         dbManager = new DBManager();
+        databaseHandler = new DatabaseHandler();
+        uiHandler = new UIHandler(mainSplitPane, tabPane, treeView);
         String path = System.getProperty("user.dir") + "\\src\\sample\\empty";
-        savePath = "";
         loadDatabase(path);
-        utility.Highlighter.initCodeArea(codeAreaRichFX, tableNames); // nikad ne zovi pre loadDatabase, nece se bojiti lepo nazivi tabela
+        utility.Highlighter.initCodeArea(codeAreaRichFX, uiHandler.getTableNames()); // nikad ne zovi pre loadDatabase, nece se bojiti lepo nazivi tabela
         selectCorrectThemeItem();
         onTextChanged(null);
     }
@@ -195,7 +171,8 @@ public class DashboardController extends ControllerBase {
 
             boolean hadError = checkForAggregates(query);
             if(hadError) {
-                addErrorTab();
+                System.out.println("ERROR");
+                uiHandler.addErrorTab(errorString);
                 this.errorString = FileHelper.readFromFile("error.txt");
                 updateOutputTables();
                 return;
@@ -223,8 +200,8 @@ public class DashboardController extends ControllerBase {
                 dbManager.outputTableNames();
                 populateTreeView();
             }
-            if (isSaved)
-                isSaved = query.toLowerCase().contains("select") || query.toLowerCase().contains("show");
+            if (databaseHandler.isSaved())
+                databaseHandler.setIsSaved(query.toLowerCase().contains("select") || query.toLowerCase().contains("show"));
         }
     }
 
@@ -341,7 +318,7 @@ public class DashboardController extends ControllerBase {
             return;
 
         String path = System.getProperty("user.dir") + "\\src\\sample\\empty";
-        savePath = "";
+        databaseHandler.setSavePath("");
         loadDatabase(path);
         deleteSQLQuery();
     }
@@ -369,7 +346,7 @@ public class DashboardController extends ControllerBase {
             return;
         String selectedPath = selectedFile.getAbsolutePath();
 //        System.out.println("SAVEPATH: " + selectedPath);
-        savePath = selectedPath;
+        databaseHandler.setSavePath(selectedPath);
         if (selectedPath.endsWith("sql")) {
             String sqlString = FileHelper.readFromFile(selectedPath);
             String wylString = FileHelper.convertSQLToWYL(sqlString);
@@ -405,136 +382,23 @@ public class DashboardController extends ControllerBase {
         dbManager.loadDb(path);
         dbManager.outputTableNames();
         populateTreeView();
-        isSaved = true;
-//        System.out.println("SAVED");
+        databaseHandler.setIsSaved(true);
     }
 
     /**
      * Updates the output tables based on the output string.
      */
     private void updateOutputTables() {
-        if (!errorString.isEmpty()) {
-            addErrorTab();
-            if (mainSplitPane.getDividers().get(0).getPosition() > 0.8)
-                mainSplitPane.setDividerPosition(0, 0.8);
-            return;
-        }
-        tabPane.getTabs().clear();
-
-
-        String[] tabSeperatedString = outputString.split("@");
-        for (int i = 0; i < tabSeperatedString.length; i++) {
-            tabSeperatedString[i] = tabSeperatedString[i].trim();
-            Tab tab = new Tab("RESULT " + (i + 1));
-
-            TableView<String[]> currTableView = new TableView<>();
-            currTableView.setEditable(false);
-
-            currTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-            currTableView.getStyleClass().add("table-view");
-
-            AnchorPane anchorPane = new AnchorPane(currTableView);
-            AnchorPane.setTopAnchor(currTableView, 0.0);
-            AnchorPane.setBottomAnchor(currTableView, 0.0);
-            AnchorPane.setLeftAnchor(currTableView, 0.0);
-            AnchorPane.setRightAnchor(currTableView, 0.0);
-
-
-            tab.setContent(anchorPane);
-            tab.setOnCloseRequest(e -> {
-                if (tabPane.getTabs().size() == 1)
-                    closeConsole();
-            });
-            tabPane.getTabs().add(tab);
-            tabPane.getSelectionModel().selectLast();
-
-            updateSingleOutputTable(currTableView, tabSeperatedString[i]);
-
-        }
+        uiHandler.updateOutputTables(outputString, errorString);
     }
 
-    /**
-     * Updates single output table based on the output string.
-     */
-    private void updateSingleOutputTable(TableView<String[]> table, String textString) {
-        table.getItems().clear();
-        table.getColumns().clear();
-
-        String[] textArr = textString.split("\\n");
-        if (textArr.length < 2)
-            return;
-
-        String tableName = textArr[0];
-        tabPane.getSelectionModel().getSelectedItem().setText(" " + tableName + " ");
-        String[] header = textArr[1].split("\\|");
-        // Add columns to TableView based on header
-        for (String h : header) {
-            TableColumn<String[], String> tableColumn = new TableColumn<>(h);
-            final int columnIndex = table.getColumns().size();
-
-            tableColumn.setCellValueFactory(data -> javafx.beans.binding.Bindings.createObjectBinding(() -> {
-                String[] rowData = data.getValue();
-                if(rowData.length <= columnIndex)
-                    return "";
-                return rowData[columnIndex];
-            }));
-
-            table.getColumns().add(tableColumn);
-        }
-
-        // Add rows to TableView
-        for (int i = 2; i < textArr.length; i++) {
-            String[] data = textArr[i].split("\\|");
-            table.getItems().add(data);
-        }
-
-        double goodDividerPosition = 0.961 - table.getItems().size() * 0.032467;
-        if (mainSplitPane.getDividers().get(0).getPosition() > goodDividerPosition) {
-            Animator.animateDividerPosition(mainSplitPane, goodDividerPosition, Duration.millis(30), () -> tabPane.requestFocus());
-        }
-    }
 
     /**
      * Populates the TreeView with the database table names.
      */
     private void populateTreeView() {
-        treeView.setRoot(null);
-        TreeItem<String> root = new TreeItem<>();
-        root.setExpanded(true);
-
-        TreeItem<String> tablesItem = new TreeItem<>("Tables");
-        tablesItem.setExpanded(true);
-
-        String[] fileContent = FileHelper.readFromFile("output.txt").split("\n");
-
-//        tableNames = Arrays.stream(names)
-//                .map(String::trim)
-//                .peek(name -> tablesItem.getChildren().add(new TreeItem<>(name)))
-//                .collect(Collectors.toList());
-
-        tableNames.clear();
-        columnNames.clear();
-        for (String content : fileContent) {
-            if (content.trim().isEmpty())
-                continue;
-            ArrayList<String> columns = new ArrayList<>();
-            for (String column : content.split("\\|")[1].split(",")) {
-                if (!column.trim().isEmpty())
-                    columns.add(column);
-            }
-            columnNames.add(columns);
-
-            String name = content.split("\\|")[0];
-            TreeItem<String> item = new TreeItem<>(name);
-            tablesItem.getChildren().add(item);
-            tableNames.add(name);
-        }
-        AutoSuggestions.updateSizes();
-
-        root.getChildren().add(tablesItem);
-        treeView.setRoot(root);
+        uiHandler.populateTreeView();
     }
-
 
     /**
      * Adds listeners to the UI components.
@@ -553,30 +417,6 @@ public class DashboardController extends ControllerBase {
             }
         }));
 
-        codeTextArea.addEventFilter(ScrollEvent.SCROLL, event -> {
-            if (event.isControlDown()) {
-                double deltaY = event.getDeltaY();
-                Font font = codeTextArea.getFont();
-                double fontSize = font.getSize();
-
-                if (deltaY > 0) {
-                    fontSize += 2;
-                } else {
-                    fontSize -= 2;
-                }
-
-                if (fontSize < 9) {
-                    fontSize = 9;
-                } else if (fontSize > 50) {
-                    fontSize = 50;
-                }
-
-                codeTextArea.setFont(new Font("Courier New", fontSize));
-                codeTextArea.positionCaret(0);
-                event.consume();
-            }
-        });
-
         codeAreaRichFX.plainTextChanges().subscribe(this::onTextChanged);
 
 
@@ -594,29 +434,7 @@ public class DashboardController extends ControllerBase {
     private void onTextChanged(PlainTextChange plainTextChange) {
         runBtn.setDisable(codeAreaRichFX.getText().trim().isEmpty());
 
-        AutoSuggestions.checkAutocomplete(codeAreaRichFX, tableNames);
-    }
-
-
-    /**
-     * Adds an error tab to the tab pane.
-     */
-    private void addErrorTab() {
-        Tab tab = new Tab("ERROR");
-        TextArea errorTextArea = new TextArea(errorString);
-        errorTextArea.setEditable(false);
-        errorTextArea.getStyleClass().add("error-area");
-
-
-        AnchorPane anchorPane = new AnchorPane(errorTextArea);
-        AnchorPane.setTopAnchor(errorTextArea, 0.0);
-        AnchorPane.setBottomAnchor(errorTextArea, 0.0);
-        AnchorPane.setLeftAnchor(errorTextArea, 0.0);
-        AnchorPane.setRightAnchor(errorTextArea, 0.0);
-
-        tab.setContent(anchorPane);
-        tabPane.getTabs().clear();
-        tabPane.getTabs().add(tab);
+        AutoSuggestions.checkAutocomplete(codeAreaRichFX, uiHandler.getTableNames());
     }
 
     /**
@@ -624,7 +442,7 @@ public class DashboardController extends ControllerBase {
      */
     @FXML
     private void maximizeConsole() {
-        Animator.animateDividerPosition(mainSplitPane, 0.0, Duration.millis(200), () -> tabPane.requestFocus());
+        uiHandler.maximizeConsole();
     }
 
     /**
@@ -632,7 +450,7 @@ public class DashboardController extends ControllerBase {
      */
     @FXML
     private void closeConsole() {
-        Animator.animateDividerPosition(mainSplitPane, 1.0, Duration.millis(200), () -> tabPane.requestFocus());
+        uiHandler.closeConsole();
     }
 
     /**
@@ -674,9 +492,7 @@ public class DashboardController extends ControllerBase {
      */
     @FXML
     private void saveCustomFormatBtn() {
-        WindowHelper.showWindow(Window.WINDOW_SAVE_AS);
-        SaveAsController saveAsController = (SaveAsController) Window.getWindowAt(Window.WINDOW_SAVE_AS).getController();
-        saveAsController.toggleBtn("custom");
+        uiHandler.saveDatabaseCustomFormatPopup();
     }
 
     /**
@@ -695,7 +511,7 @@ public class DashboardController extends ControllerBase {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             String currSelected = treeView.getSelectionModel().getSelectedItem().getValue();
             dbManager.doQuery("DROP TABLE " + currSelected);
-            isSaved = false;
+            databaseHandler.setIsSaved(false);
             dbManager.outputTableNames();
             populateTreeView();
             treeView.getSelectionModel().clearSelection();
@@ -722,22 +538,10 @@ public class DashboardController extends ControllerBase {
      */
     @FXML
     private void saveMenuBtn() {
-        System.out.println(savePath);
-        if (savePath.isEmpty()) {
+        if (databaseHandler.getSavePath().isEmpty()) {
             saveCustomFormatBtn();
         } else {
-            File file = new File(savePath);
-            String fileName = file.getName();
-            String filePath = file.getParent() + "\\";
-            String format = "";
-            int index = fileName.lastIndexOf('.');
-            if (index > 0) {
-                format = fileName.substring(index + 1);
-            }
-
-            dbManager.exportDatabaseCustom(filePath, fileName, format);
-            System.out.println("SUCCESSFULLY SAVED: " + savePath);
-            isSaved = true;
+            databaseHandler.saveDatabase();
         }
     }
 
@@ -747,7 +551,7 @@ public class DashboardController extends ControllerBase {
      * @param e {@link WindowEvent} object.
      */
     public void onAppClose(WindowEvent e) {
-        if (isSaved)
+        if (databaseHandler.isSaved())
             return;
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -773,7 +577,6 @@ public class DashboardController extends ControllerBase {
                 WindowHelper.closeAllWindows();
             } else if (result.get() == discardButton) {
                 if (e.getEventType() == WindowEvent.WINDOW_CLOSE_REQUEST) {
-//                    WindowHelper.hideWindow(Window.WINDOW_DASHBOARD);
                     WindowHelper.closeAllWindows();
                 }
             } else {
@@ -789,8 +592,8 @@ public class DashboardController extends ControllerBase {
      * @param path Path to save.
      */
     public void setSavePath(String path) {
-        savePath = path;
-        isSaved = true;
+        databaseHandler.setSavePath(path);
+        databaseHandler.setIsSaved(true);
     }
 
     /**
@@ -803,11 +606,11 @@ public class DashboardController extends ControllerBase {
     }
 
     public List<String> getTableNames() {
-        return tableNames;
+        return uiHandler.getTableNames();
     }
 
     public List<List<String>> getColumnNames() {
-        return columnNames;
+        return uiHandler.getColumnNames();
     }
 
     public void undoCodeArea() {
